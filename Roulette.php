@@ -22,12 +22,15 @@ class Roulette {
         $combinationsCount = $this->getCombinationsCount();
         $combinationsCountText = $this->getCombinationsCountText($combinationsCount);
         $this->onSaveData->__invoke($combinationsCountText);
-        $startCombination = $this->generateStartCombination();
-        $this->onSaveData->__invoke(decbin($startCombination));
 
-        $combination = $startCombination;
-        while ($combination = $this->generateNextCombination($combination)) {
-            $this->onSaveData->__invoke(str_pad(decbin($combination), $this->fieldsCount, 0, STR_PAD_LEFT));
+        if ($this->stop === false) {
+            $startCombination = $this->generateStartCombination();
+            $this->onSaveData->__invoke(decbin($startCombination));
+
+            $combination = $startCombination;
+            while ($combination = $this->generateNextCombination($combination)) {
+                $this->onSaveData->__invoke(str_pad(decbin($combination), $this->fieldsCount, 0, STR_PAD_LEFT));
+            }
         }
     }
 
@@ -39,6 +42,7 @@ class Roulette {
     private function getCombinationsCountText($combinationsCount)
     {
         if ($combinationsCount < 10) {
+            $this->stop = true;
             return 'Менее 10 комбинаций.';
         } else {
             return 'Количество комбинаций: ' . $combinationsCount;
